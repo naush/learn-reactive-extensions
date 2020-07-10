@@ -22,7 +22,7 @@ export const usingFetch = (url: string): Observable<Response> => {
 }
 
 export const mapStatus = (invalidUrl: string): Observable<number> => {
-    return fromFetch(invalidUrl).pipe(map((response) => response.status));
+    return usingFetch(invalidUrl).pipe(map((response) => response.status));
 }
 
 export const logging = (console: Logger, observable: Observable<number>): Observable<number> => {
@@ -34,8 +34,7 @@ export const getTheJSON = (url: string): Observable<any> => {
 }
 
 export const takeFiveRows = (url: string): Observable<any> => {
-    return fromFetch(url).pipe(
-        flatMap((response) => response.json()),
+    return getTheJSON(url).pipe(
         flatMap((json) => of(...json)), // can we use from?
         take(5)
     );
