@@ -10,34 +10,43 @@ interface Logger {
 }
 
 export const subscribe = (observable: Observable<number>, cb:Dispatch<SetStateAction<number>>) => {
+    observable.subscribe(cb);
 }
 
 export const takeTwo = (observable: Observable<number>): Observable<number> => {
-    return observable;
+    return observable.pipe(take(2));;
 }
 
 export const usingFetch = (url: string): Observable<Response> => {
-    return empty();
+    return fromFetch(url);
 }
 
 export const mapStatus = (invalidUrl: string): Observable<number> => {
-    return of(1);
+    return fromFetch(invalidUrl).pipe(map((response) => response.status));
 }
 
 export const logging = (console: Logger, observable: Observable<number>): Observable<number> => {
-    return empty();
+    return observable.pipe(tap((number) => console.log(number)), tap((number) => console.log(number)));
 }
 
 export const getTheJSON = (url: string): Observable<any> => {
-    return empty();
+    return fromFetch(url).pipe(flatMap((response) => response.json()));
 }
 
 export const takeFiveRows = (url: string): Observable<any> => {
-    return empty();
+    return fromFetch(url).pipe(
+        flatMap((response) => response.json()),
+        flatMap((json: object[]) => of(...json)), // can we use from?
+        take(5)
+    );
 }
 
 export const countValidUsers = (url: string): Observable<number> => {
-    return empty();
+    return getTheJSON(url).pipe(
+        flatMap((json) => of(...json)),
+        filter((json) => json.user),
+        count(),
+    );
 }
 
 export const findUsersNamed = (url: string): Observable<string> => {
@@ -98,3 +107,4 @@ export const emitTheLastSentValue = (values: string[]): Observable<string> => {
 export const completeASubscription = (): Observable<string> => {
     return empty();
 }
+
