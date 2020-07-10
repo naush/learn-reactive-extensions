@@ -36,7 +36,7 @@ export const getTheJSON = (url: string): Observable<any> => {
 export const takeFiveRows = (url: string): Observable<any> => {
     return fromFetch(url).pipe(
         flatMap((response) => response.json()),
-        flatMap((json: object[]) => of(...json)), // can we use from?
+        flatMap((json) => of(...json)), // can we use from?
         take(5)
     );
 }
@@ -50,11 +50,17 @@ export const countValidUsers = (url: string): Observable<number> => {
 }
 
 export const findUsersNamed = (url: string): Observable<string> => {
-    return empty();
+    return getTheJSON(url).pipe(
+        flatMap((json) => of(...json)),
+        filter((json) => json.user?.name?.startsWith('n')),
+        pluck('user', 'name')
+    );
 }
 
 export const findUniqueUsersNamed = (url: string): Observable<string> => {
-    return empty();
+    return findUsersNamed(url).pipe(
+        distinct(),
+    );
 }
 
 export const subscribeAndHandleAnError = (console: Logger, observable: Observable<string>) => {
